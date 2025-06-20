@@ -1,4 +1,4 @@
-name: Update Pluto TV Playlist
+name: Update PlutoTV Playlist
 
 on:
   workflow_dispatch:  # Permite execução manual
@@ -25,7 +25,7 @@ jobs:
         pip install requests beautifulsoup4
 
     - name: Run scraper
-      run: python pluto_scraper.py
+      run: python plutotv_scraper.py
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3

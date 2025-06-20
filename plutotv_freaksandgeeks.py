@@ -2,36 +2,31 @@
 
 import uuid
 import os
-from streamlink import Streamlink
 
-# Inicializa o client do Streamlink
-session = Streamlink()
-
-# Dados dos episódios fornecidos manualmente
+# Manual list of episodes
 EPISODES = [
-    {"season": 1, "episode": 1,  "title": "Piloto",                                "episode_id": "60959ee4d9b0ce0014e4b694"},
-    {"season": 1, "episode": 2,  "title": "Cervejas e Açudes",                     "episode_id": "60959e2141fc48001326c5af"},
-    {"season": 1, "episode": 3,  "title": "Truques e Travessuras",                "episode_id": "60959e2341fc48001326c5d6"},
-    {"season": 1, "episode": 4,  "title": "Kim Kelley é Minha Amiga",             "episode_id": "60959e2141fc48001326c59a"},
-    {"season": 1, "episode": 5,  "title": "Testes e Seios",                        "episode_id": "60959e2041fc48001326c553"},
-    {"season": 1, "episode": 6,  "title": "Eu Estou Com a Banda",                   "episode_id": "60959e2541fc48001326c674"},
-    {"season": 1, "episode": 7,  "title": "Cardado e Descartado",                   "episode_id": "60959e2e41fc48001326c6f2"},
-    {"season": 1, "episode": 8,  "title": "Namoradas e Namorados",                  "episode_id": "60959e2541fc48001326c65d"},
-    {"season": 1, "episode": 9,  "title": "Temos Espírito",                         "episode_id": "60959e2641fc48001326c689"},
-    {"season": 1, "episode": 10, "title": "O Diário",                               "episode_id": "60959e2341fc48001326c615"},
-    {"season": 1, "episode": 11, "title": "Aparência e Livros",                     "episode_id": "60959e2141fc48001326c585"},
-    {"season": 1, "episode": 12, "title": "A Porta da Garagem",                    "episode_id": "60959e2641fc48001326c6a7"},
-    {"season": 1, "episode": 13, "title": "Engasgando e Fumando",                  "episode_id": "60959e2341fc48001326c5eb"},
-    {"season": 1, "episode": 14, "title": "Cachorros Mortos e Professores de Ginástica", "episode_id": "60959e2e41fc48001326c707"},
-    {"season": 1, "episode": 15, "title": "Noshing e Moshing",                     "episode_id": "60959f4c72e8e300148a367f"},
-    {"season": 1, "episode": 16, "title": "Beijar e Vagabundear",                  "episode_id": "60959e2341fc48001326c62b"},
-    {"season": 1, "episode": 17, "title": "As Pequenas Coisas",                    "episode_id": "60959e2341fc48001326c600"},
-    {"season": 1, "episode": 18, "title": "Discotecas e Dragões",                   "episode_id": "60959e2141fc48001326c56e"},
+    {"season": 1, "episode": 1,  "title": "Pilot",                               "episode_id": "60959ee4d9b0ce0014e4b694"},
+    {"season": 1, "episode": 2,  "title": "Beers and Ponds",                     "episode_id": "60959e2141fc48001326c5af"},
+    {"season": 1, "episode": 3,  "title": "Pranks and Tricks",                   "episode_id": "60959e2341fc48001326c5d6"},
+    {"season": 1, "episode": 4,  "title": "Kim Kelly Is My Friend",             "episode_id": "60959e2141fc48001326c59a"},
+    {"season": 1, "episode": 5,  "title": "Tests and Tits",                      "episode_id": "60959e2041fc48001326c553"},
+    {"season": 1, "episode": 6,  "title": "I'm in a Band",                      "episode_id": "60959e2541fc48001326c674"},
+    {"season": 1, "episode": 7,  "title": "Carded and Discarded",               "episode_id": "60959e2e41fc48001326c6f2"},
+    {"season": 1, "episode": 8,  "title": "Girlfriends and Boyfriends",          "episode_id": "60959e2541fc48001326c65d"},
+    {"season": 1, "episode": 9,  "title": "We Have Spirit",                      "episode_id": "60959e2641fc48001326c689"},
+    {"season": 1, "episode": 10, "title": "The Diary",                          "episode_id": "60959e2341fc48001326c615"},
+    {"season": 1, "episode": 11, "title": "Appearance and Books",               "episode_id": "60959e2141fc48001326c585"},
+    {"season": 1, "episode": 12, "title": "The Garage Door",                    "episode_id": "60959e2641fc48001326c6a7"},
+    {"season": 1, "episode": 13, "title": "Choking and Smoking",                "episode_id": "60959e2341fc48001326c5eb"},
+    {"season": 1, "episode": 14, "title": "Dead Dogs and Gym Teachers",         "episode_id": "60959e2e41fc48001326c707"},
+    {"season": 1, "episode": 15, "title": "Noshing and Moshing",                "episode_id": "60959f4c72e8e300148a367f"},
+    {"season": 1, "episode": 16, "title": "Kissing and Loafing",                "episode_id": "60959e2341fc48001326c62b"},
+    {"season": 1, "episode": 17, "title": "The Little Things",                 "episode_id": "60959e2341fc48001326c600"},
+    {"season": 1, "episode": 18, "title": "Discos and Dragons",                "episode_id": "60959e2141fc48001326c56e"},
 ]
 
-
 def generate_hls_url(episode_id):
-    """Gera URL HLS válida para o episódio sem Streamlink"""
+    """Generate a master HLS URL for an episode"""
     sid = str(uuid.uuid4())
     device_id = f"web_{str(uuid.uuid4())[:8]}"
     return (
@@ -43,40 +38,31 @@ def generate_hls_url(episode_id):
     )
 
 
-def get_best_stream_url(master_url):
-    """Usa o Streamlink para pegar só a URL da melhor qualidade."""
-    streams = session.streams(master_url)
-    if "best" in streams:
-        return streams["best"].to_url()
-    return master_url  # fallback
-
-
 def generate_m3u_playlist():
-    m3u_content = "#EXTM3U\n\n"
+    """Create M3U playlist pointing to master HLS URLs"""
+    m3u = ["#EXTM3U"]
 
     for ep in EPISODES:
-        season_str  = str(ep["season"]).zfill(2)
-        episode_str = str(ep["episode"]).zfill(2)
-        tvg_id      = f"FreaksGeeks.S{season_str}E{episode_str}"
-        title       = ep["title"]
+        season = str(ep["season"]).zfill(2)
+        episode = str(ep["episode"]).zfill(2)
+        tvg_id = f"FreaksGeeks.S{season}E{episode}"
+        title = ep["title"]
+        url = generate_hls_url(ep["episode_id"])
 
-        master_url  = generate_hls_url(ep["episode_id"])
-        best_url    = get_best_stream_url(master_url)
-
-        # EXTINF com type="video" para on-demand
-        m3u_content += (
+        m3u.append(
             f'#EXTINF:-1 tvg-id="{tvg_id}" tvg-name="{title}" '
             f'group-title="Freaks and Geeks" type="video", '
-            f'S{season_str}E{episode_str} • {title}\n'
+            f'S{season}E{episode} • {title}'
         )
-        m3u_content += f"{best_url}\n\n"
+        m3u.append(url)
+        m3u.append("")  # blank line
 
     os.makedirs('output', exist_ok=True)
-    out_path = os.path.join('output', 'freaks_and_geeks.m3u')
-    with open(out_path, 'w', encoding='utf-8') as f:
-        f.write(m3u_content)
-    print(f'✅ Playlist gerada: {out_path}')
+    path = os.path.join('output', 'freaks_and_geeks.m3u')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write("\n".join(m3u))
+    print(f"Playlist generated: {path}")
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     generate_m3u_playlist()

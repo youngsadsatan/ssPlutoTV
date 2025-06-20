@@ -1,23 +1,20 @@
-name: update_playlist
+name: Update PlutoTV Playlist
 
-# Permissões mínimas: só leitura de código e escrita em Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
 on:
-  workflow_dispatch:   # disparo manual
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
@@ -40,7 +37,12 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+
+    # **Esse bloco é obrigatório para o deploy-pages funcionar**
+    environment:
+      name: github-pages
+
     steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
-        # não precisa de token explícito, usa GITHUB_TOKEN por trás dos panos
+        # não precisa de token explícito

@@ -1,10 +1,9 @@
 name: Update PlutoTV Playlist
 
 on:
-  workflow_dispatch:  # Permite execução manual
+  workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   build:
@@ -12,26 +11,30 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
-
+      uses: actions/checkout@v4
+      
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
-
+        
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install requests beautifulsoup4
-
-    - name: Run scraper
-      run: python plutotv_scraper.py
-
+        pip install requests beautifulsoup4 streamlink
+        
+    - name: Run Streamlink scraper
+      run: python plutotv_streamlink.py
+      
+    - name: Move playlist to root
+      run: mv output/freaks_and_geeks.m3u .
+      
     - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
+      uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./
+        publish_dir: .
         publish_branch: gh-pages
         keep_files: true
         force_orphan: true
+        allow_empty_commit: true

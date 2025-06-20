@@ -1,9 +1,11 @@
+# .github/workflows/update_pluto_playlist.yml
+
 name: Update PlutoTV Playlist
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: read       # só lê o código
+  pages: write         # escreve no Pages
+  id-token: write      # para deploy-pages
 
 on:
   workflow_dispatch:
@@ -37,12 +39,9 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-
-    # **Esse bloco é obrigatório para o deploy-pages funcionar**
     environment:
       name: github-pages
 
     steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
-        # não precisa de token explícito
